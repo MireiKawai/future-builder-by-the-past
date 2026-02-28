@@ -413,10 +413,10 @@ section:last-child{border-bottom:none}
   <span class="nav-logo" onclick="scrollTo({top:0,behavior:'smooth'})">My <em>Universe</em></span>
   <div class="nav-links">
     <a href="#about">About</a>
-    <a href="#career">経歴</a>
+    <a href="#career">Career</a>
     <a href="#projects">Projects</a>
     <a href="#future">Future</a>
-    <a href="#books">Books</a>
+    <a href="#books">Favorite Contents</a>
     <a href="#photos">Photos</a>
     <button class="nav-edit-toggle" id="editToggle" onclick="toggleEditMode()">✎ 編集</button>
   </div>
@@ -446,6 +446,13 @@ section:last-child{border-bottom:none}
     </div>
   </section>
 
+    <!-- FUTURE -->
+  <section id="future">
+    <div class="sh">Future / 未来の目標・計画</div>
+    <div class="future-list" id="futureList"></div>
+    <button class="add-btn" onclick="openModal('future')">＋ 目標・計画を追加</button>
+  </section>
+
   <!-- CAREER -->
   <section id="career">
     <div class="sh">経歴 / Career & Skills</div>
@@ -458,13 +465,6 @@ section:last-child{border-bottom:none}
     <div class="sh">Projects / Portfolio</div>
     <div class="projects-list" id="projectsList"></div>
     <button class="add-btn" onclick="openModal('project')">＋ プロジェクトを追加</button>
-  </section>
-
-  <!-- FUTURE -->
-  <section id="future">
-    <div class="sh">Future / 未来の目標・計画</div>
-    <div class="future-list" id="futureList"></div>
-    <button class="add-btn" onclick="openModal('future')">＋ 目標・計画を追加</button>
   </section>
 
   <!-- BOOKS & PAPERS -->
