@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f9f7f4;
+  --bg2: #f2ede6;
+  --ink: #1c1a17;
+  --muted: #8a8278;
+  --faint: #e6e0d8;
+  --accent: #b8935a;
+  --accent2: #d4b896;
+  --danger: #c0392b;
+  --future: #5a8a72;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'DM Mono',monospace;font-weight:300;
+  font-size:13px;line-height:1.85;
+  min-height:100vh;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--faint)}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:22px 56px;
+  backdrop-filter:blur(12px);
+  background:rgba(249,247,244,.88);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s;
+}
+nav.scrolled{border-color:var(--faint)}
+.nav-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;font-weight:300;letter-spacing:.06em;
+  cursor:pointer;
+}
+.nav-logo span{font-style:italic;color:var(--accent)}
+.nav-links{display:flex;gap:36px;align-items:center}
+.nav-links a{
+  text-decoration:none;color:var(--muted);
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-edit-toggle{
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);background:none;border:1px solid var(--accent2);
+  padding:5px 14px;cursor:pointer;transition:all .2s;
+}
+.nav-edit-toggle:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.nav-edit-toggle.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── LAYOUT ── */
+.wrap{max-width:900px;margin:0 auto;padding:0 56px}
+
+section{padding:88px 0;border-bottom:1px solid var(--faint)}
+section:last-child{border-bottom:none}
+
+/* ── HERO ── */
+#hero{padding-top:172px;padding-bottom:108px;border-bottom:1px solid var(--faint)}
+.hero-tag{
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:20px;
+  opacity:0;animation:rise .7s .1s both;
+}
+.hero-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(58px,9vw,100px);
+  font-weight:300;line-height:1;
+  letter-spacing:-.02em;margin-bottom:12px;
+  opacity:0;animation:rise .8s .2s both;
+}
+.hero-name em{font-style:italic;color:var(--accent)}
+.hero-subtitle{
+  font-size:13px;color:var(--muted);
+  max-width:480px;line-height:2;margin-bottom:36px;
+  opacity:0;animation:rise .8s .35s both;
+}
+.hero-meta{
+  display:flex;flex-wrap:wrap;gap:10px;
+  opacity:0;animation:rise .8s .5s both;
+}
+.chip{
+  border:1px solid var(--faint);background:var(--bg2);
+  padding:5px 14px;font-size:10px;letter-spacing:.08em;
+  color:var(--muted);border-radius:0;
+}
+
+/* hero edit */
+.hero-edit-overlay{
+  position:absolute;inset:0;
+  background:rgba(249,247,244,.9);
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;gap:12px;
+}
+#hero{position:relative}
+.edit-mode #hero .hero-edit-overlay{display:flex}
+
+/* ── SECTION HEADING ── */
+.sh{
+  font-size:10px;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:44px;
+  display:flex;align-items:center;gap:18px;
+}
+.sh::after{content:'';flex:1;height:1px;background:var(--faint)}
+.sh-right{flex-direction:row-reverse}
+.sh-right::after{display:none}
+.sh-right::before{content:'';flex:1;height:1px;background:var(--faint)}
+
+/* ── ADD BUTTON ── */
+.add-btn{
+  display:none;align-items:center;gap:6px;
+  font-family:'DM Mono',monospace;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);background:none;border:1px dashed var(--faint);
+  padding:10px 20px;cursor:pointer;margin-top:24px;
+  transition:all .2s;width:100%;justify-content:center;
+}
+.add-btn:hover{border-color:var(--accent);color:var(--accent)}
+.edit-mode .add-btn{display:flex}
+
+/* ── CAREER TIMELINE ── */
+.timeline{display:flex;flex-direction:column}
+.tl-item{
+  display:grid;grid-template-columns:110px 1fr;
+  gap:0 36px;padding:30px 0;
+  border-bottom:1px solid var(--faint);
+  position:relative;
+}
+.tl-item:last-child{border-bottom:none}
+.tl-year{
+  font-size:11px;letter-spacing:.06em;color:var(--muted);
+  padding-top:3px;font-style:italic;
+}
+.tl-body{}
+.tl-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:400;margin-bottom:3px;
+}
+.tl-org{color:var(--muted);font-size:11px;margin-bottom:8px;letter-spacing:.04em}
+.tl-desc{color:var(--muted);font-size:12px;line-height:2}
+.tl-item.future .tl-year{color:var(--future)}
+.tl-item.future .tl-title{color:var(--future);font-style:italic}
+.future-badge{
+  display:inline-block;font-size:8px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--future);
+  border:1px solid var(--future);padding:2px 7px;
+  margin-left:10px;vertical-align:middle;opacity:.7;
+}
+.item-actions{
+  display:none;position:absolute;top:28px;right:0;
+  gap:8px;
+}
+.edit-mode .item-actions{display:flex}
+.ia-btn{
+  font-size:10px;letter-spacing:.1em;color:var(--muted);
+  background:none;border:1px solid var(--faint);
+  padding:4px 10px;cursor:pointer;transition:all .2s;
+}
+.ia-btn:hover{border-color:var(--ink);color:var(--ink)}
+.ia-btn.del:hover{border-color:var(--danger);color:var(--danger)}
+
+/* ── SKILLS ── */
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.skill-card{
+  border:1px solid var(--faint);padding:24px;
+  background:var(--bg2);position:relative;
+}
+.skill-cat{
+  font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:14px;
+}
+.skill-items{color:var(--muted);font-size:12px;line-height:2.3}
+
+/* ── PROJECTS ── */
+.projects-list{display:flex;flex-direction:column}
+.proj-item{
+  display:grid;grid-template-columns:1fr auto;
+  gap:24px;align-items:start;
+  padding:30px 0;border-bottom:1px solid var(--faint);
+  position:relative;
+}
+.proj-item:last-child{border-bottom:none}
+.proj-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:400;margin-bottom:6px;
+}
+.proj-desc{color:var(--muted);font-size:12px;line-height:2;margin-bottom:10px}
+.proj-tags{display:flex;flex-wrap:wrap;gap:6px}
+.ptag{
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--faint);padding:3px 10px;color:var(--muted);
+}
+.proj-link{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  border-bottom:1px solid var(--faint);
+  transition:all .2s;white-space:nowrap;padding-top:4px;
+}
+.proj-link:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ── FUTURE ── */
+.future-list{display:flex;flex-direction:column}
+.fut-item{
+  display:grid;grid-template-columns:36px 1fr;
+  gap:0 24px;padding:24px 0;
+  border-bottom:1px solid var(--faint);position:relative;
+}
+.fut-item:last-child{border-bottom:none}
+.fut-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:32px;color:var(--faint);line-height:1;
+  margin-top:-2px;
+}
+.fut-title{font-size:13px;margin-bottom:4px;letter-spacing:.02em}
+.fut-desc{color:var(--muted);font-size:12px;line-height:1.9}
+.fut-horizon{
+  display:inline-block;font-size:9px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--future);
+  margin-top:8px;
+}
+
+/* ── BOOKS ── */
+.books-list{display:flex;flex-direction:column}
+.book-item{
+  display:grid;grid-template-columns:44px 1fr auto;
+  gap:0 20px;padding:22px 0;
+  border-bottom:1px solid var(--faint);align-items:start;
+  position:relative;
+}
+.book-item:last-child{border-bottom:none}
+.book-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;color:var(--faint);line-height:1;padding-top:2px;
+}
+.book-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;font-weight:400;margin-bottom:3px;
+}
+.book-author{color:var(--muted);font-size:11px;margin-bottom:6px}
+.book-note{color:var(--muted);font-size:12px;line-height:1.9}
+.book-kind{
+  font-size:8px;letter-spacing:.15em;text-transform:uppercase;
+  padding:4px 10px;margin-top:2px;
+  background:var(--bg2);border:1px solid var(--faint);
+  color:var(--muted);white-space:nowrap;height:fit-content;
+}
+.book-kind.paper{color:var(--future);border-color:var(--future);background:none}
+
+/* ── PHOTOS ── */
+.photos-intro{color:var(--muted);font-size:12px;margin-bottom:28px;line-height:2}
+.photos-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:3px;
+}
+.photo-slot{
+  aspect-ratio:1;background:var(--bg2);
+  border:1px solid var(--faint);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;cursor:pointer;
+  transition:border-color .2s;
+}
+.photo-slot:hover{border-color:var(--accent2)}
+.photo-slot img{
+  width:100%;height:100%;object-fit:cover;
+  display:none;
+}
+.photo-slot.filled img{display:block}
+.photo-slot.filled .ph-empty{display:none}
+.ph-empty{text-align:center;color:var(--muted);pointer-events:none}
+.ph-empty .plus{font-size:20px;display:block;margin-bottom:6px;color:var(--faint)}
+.ph-empty span{font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.ph-cap{
+  position:absolute;bottom:0;left:0;right:0;
+  background:rgba(28,26,23,.75);color:#fff;
+  font-size:10px;padding:7px 10px;
+  transform:translateY(100%);transition:transform .22s;
+}
+.photo-slot:hover .ph-cap{transform:none}
+.ph-del{
+  position:absolute;top:6px;right:6px;
+  background:rgba(28,26,23,.6);color:#fff;
+  border:none;width:22px;height:22px;
+  font-size:12px;cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+}
+.edit-mode .ph-del{display:flex}
+
+/* ── MODAL ── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(28,26,23,.55);z-index:200;
+  align-items:center;justify-content:center;
+  padding:24px;
+}
+.overlay.open{display:flex}
+.modal{
+  background:var(--bg);border:1px solid var(--faint);
+  padding:40px;width:520px;max-width:100%;
+  max-height:90vh;overflow-y:auto;
+  animation:slideUp .25s both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.modal h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;font-weight:300;margin-bottom:28px;
+}
+.field{margin-bottom:18px}
+.field label{
+  display:block;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+}
+.field input,.field textarea,.field select{
+  width:100%;background:none;border:1px solid var(--faint);
+  padding:10px 14px;font-family:'DM Mono',monospace;
+  font-size:12px;color:var(--ink);outline:none;
+  transition:border-color .2s;appearance:none;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
+.field textarea{min-height:80px;resize:vertical;line-height:1.8}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.modal-actions{display:flex;gap:12px;margin-top:28px;justify-content:flex-end}
+.btn{
+  padding:10px 24px;font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;border:1px solid var(--ink);background:none;
+  color:var(--ink);transition:all .2s;
+}
+.btn:hover{background:var(--ink);color:var(--bg)}
+.btn-ghost{border-color:var(--faint);color:var(--muted)}
+.btn-ghost:hover{background:var(--faint);color:var(--ink)}
+.checkbox-row{display:flex;align-items:center;gap:10px;margin-top:4px}
+.checkbox-row input[type=checkbox]{width:auto;border:none}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;padding:48px 24px;
+  color:var(--muted);font-size:12px;
+  border:1px dashed var(--faint);
+}
+.empty-state .es-icon{font-size:28px;margin-bottom:12px;opacity:.4}
+
+/* ── ANIMATIONS ── */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s}
+.reveal.in{opacity:1;transform:none}
+
+/* ── EDIT MODE INDICATOR ── */
+.edit-banner{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:99;
+  background:var(--accent);color:#fff;
+  text-align:center;font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;padding:8px;
+}
+.edit-mode .edit-banner{display:block}
+.edit-mode section{outline:1px dashed transparent;transition:outline .2s}
+.edit-mode section:hover{outline-color:var(--faint)}
+
+/* ── PROFILE SECTION ── */
+.profile-grid{display:grid;grid-template-columns:140px 1fr;gap:40px;align-items:start}
+.profile-img-wrap{
+  aspect-ratio:1;background:var(--bg2);border:1px solid var(--faint);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;overflow:hidden;
+}
+.profile-img-wrap img{width:100%;height:100%;object-fit:cover;display:none}
+.profile-img-wrap.filled img{display:block}
+.profile-img-wrap.filled .profile-ph{display:none}
+.profile-ph{color:var(--muted);font-size:10px;text-align:center;letter-spacing:.1em}
+.profile-info{}
+.profile-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:36px;font-weight:300;margin-bottom:6px;
+}
+.profile-name em{font-style:italic;color:var(--accent)}
+.profile-tagline{color:var(--muted);font-size:12px;line-height:2;margin-bottom:16px}
+.profile-chips{display:flex;flex-wrap:wrap;gap:8px}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  nav{padding:18px 24px}
+  .nav-links{gap:20px}
+  .wrap{padding:0 24px}
+  .skills-grid{grid-template-columns:1fr}
+  .profile-grid{grid-template-columns:1fr;gap:24px}
+  .tl-item{grid-template-columns:1fr;gap:4px}
+  .book-item{grid-template-columns:36px 1fr;gap:0 14px}
+  .book-kind{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- EDIT BANNER -->
+<div class="edit-banner">✎ 編集モード — 各項目の ✎ ボタンで編集 · ＋ ボタンで追加</div>
+
+<!-- NAV -->
+<nav id="mainnav">
+  <span class="nav-logo" onclick="scrollTo({top:0,behavior:'smooth'})">My <em>Universe</em></span>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#career">経歴</a>
+    <a href="#projects">Projects</a>
+    <a href="#future">Future</a>
+    <a href="#books">Books</a>
+    <a href="#photos">Photos</a>
+    <button class="nav-edit-toggle" id="editToggle" onclick="toggleEditMode()">✎ 編集</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ABOUT / PROFILE -->
+  <section id="about">
+    <div class="sh">About</div>
+    <div class="profile-grid">
+      <div class="profile-img-wrap" id="profileImgWrap" onclick="triggerProfileImg()">
+        <img id="profileImg" src="" alt="">
+        <div class="profile-ph">
+          <div style="font-size:28px;margin-bottom:6px;opacity:.3">◯</div>
+          <span>写真を追加</span>
+        </div>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name" id="profileName">Your <em>Name</em></div>
+        <div class="profile-tagline" id="profileTagline">ここに自己紹介を書いてください。<br>研究テーマ、関心事、大切にしていることなど。</div>
+        <div class="profile-chips" id="profileChips"></div>
+        <div style="margin-top:20px;display:none" id="profileEditBtn">
+          <button class="add-btn" style="width:auto;padding:8px 18px;display:inline-flex" onclick="openProfileModal()">✎ プロフィールを編集</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAREER -->
+  <section id="career">
+    <div class="sh">経歴 / Career & Skills</div>
+    <div class="timeline" id="timeline"></div>
+    <button class="add-btn" onclick="openModal('career')">＋ 経歴・資格を追加</button>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="sh">Projects / Portfolio</div>
+    <div class="projects-list" id="projectsList"></div>
+    <button class="add-btn" onclick="openModal('project')">＋ プロジェクトを追加</button>
+  </section>
+
+  <!-- FUTURE -->
+  <section id="future">
+    <div class="sh">Future / 未来の目標・計画</div>
+    <div class="future-list" id="futureList"></div>
+    <button class="add-btn" onclick="openModal('future')">＋ 目標・計画を追加</button>
+  </section>
+
+  <!-- BOOKS & PAPERS -->
+  <section id="books">
+    <div class="sh">Books & Papers / 読書・論文リスト</div>
+    <div class="books-list" id="booksList"></div>
+    <button class="add-btn" onclick="openModal('book')">＋ 本・論文を追加</button>
+  </section>
+
+  <!-- PHOTOS -->
+  <section id="photos">
+    <div class="sh">Photos / 日々のかけら</div>
+    <p class="photos-intro">写真をクリックしてアップロード。キャプションも追加できます。<br>画像はブラウザに保存され、外部には送信されません。</p>
+    <div class="photos-grid" id="photosGrid"></div>
+    <button class="add-btn" onclick="addPhotoSlot()">＋ 写真スロットを追加</button>
+  </section>
+
+</div><!-- /wrap -->
+
+<div style="text-align:center;padding:48px 24px;color:var(--muted);font-size:10px;letter-spacing:.1em;border-top:1px solid var(--faint)">
+  My Private Universe — GitHub Pages
+</div>
+
+<!-- OVERLAY / MODAL -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal"></div>
+</div>
+
+<input type="file" id="photoInput" accept="image/*" style="display:none">
+<input type="file" id="profileImgInput" accept="image/*" style="display:none">
+
+<script>
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let state = {
+  profile: {
+    name: 'Your Name',
+    nameItalic: '',
+    tagline: 'ここに自己紹介を書いてください。\n研究テーマ、関心事、大切にしていることなど。',
+    chips: [],
+    img: ''
+  },
+  career: [],
+  projects: [],
+  future: [],
+  books: [],
+  photos: []
+};
+
+let editMode = false;
+let editingId = null;
+let editingSection = null;
+let photoSlotTarget = null;
+
+/* ════════════════════════════════════════
+   STORAGE
+════════════════════════════════════════ */
+function save() {
+  try { localStorage.setItem('myuniverse_state', JSON.stringify(state)); } catch(e){}
+}
+function load() {
+  try {
+    const s = localStorage.getItem('myuniverse_state');
+    if (s) state = JSON.parse(s);
+  } catch(e){}
+}
+
+/* ════════════════════════════════════════
+   EDIT MODE
+════════════════════════════════════════ */
+function toggleEditMode() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode', editMode);
+  document.getElementById('editToggle').textContent = editMode ? '✓ 完了' : '✎ 編集';
+  document.getElementById('editToggle').classList.toggle('active', editMode);
+  document.getElementById('profileEditBtn').style.display = editMode ? 'block' : 'none';
+}
+
+/* ════════════════════════════════════════
+   RENDER
+════════════════════════════════════════ */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function renderAll() {
+  renderProfile();
+  renderCareer();
+  renderProjects();
+  renderFuture();
+  renderBooks();
+  renderPhotos();
+}
+
+/* PROFILE */
+function renderProfile() {
+  const p = state.profile;
+  const nameEl = document.getElementById('profileName');
+  nameEl.innerHTML = p.nameItalic
+    ? `${p.name} <em>${p.nameItalic}</em>`
+    : p.name;
+  document.getElementById('profileTagline').innerHTML = p.tagline.replace(/\n/g,'<br>');
+  const chipsEl = document.getElementById('profileChips');
+  chipsEl.innerHTML = p.chips.map(c=>`<span class="chip">${c}</span>`).join('');
+  const imgEl = document.getElementById('profileImg');
+  const wrap = document.getElementById('profileImgWrap');
+  if (p.img) {
+    imgEl.src = p.img;
+    wrap.classList.add('filled');
+  } else {
+    imgEl.src = '';
+    wrap.classList.remove('filled');
+  }
+}
+
+/* CAREER */
+function renderCareer() {
+  const el = document.getElementById('timeline');
+  if (!state.career.length) {
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">◷</div>経歴・資格をまだ追加していません<br>編集モードで「＋ 追加」をクリック</div>`;
+    return;
+  }
+  el.innerHTML = state.career.map(item => `
+    <div class="tl-item ${item.future?'future':''} reveal">
+      <div class="tl-year">${item.year||'—'}</div>
+      <div class="tl-body">
+        <div class="tl-title">${item.title}${item.future?'<span class="future-badge">予定</span>':''}</div>
+        ${item.org?`<div class="tl-org">${item.org}</div>`:''}
+        ${item.desc?`<div class="tl-desc">${item.desc.replace(/\n/g,'<br>')}</div>`:''}
+      </div>
+      <div class="item-actions">
+        <button class="ia-btn" onclick="editItem('career','${item.id}')">✎</button>
+        <button class="ia-btn del" onclick="deleteItem('career','${item.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+  observeReveal();
+}
+
+/* PROJECTS */
+function renderProjects() {
+  const el = document.getElementById('projectsList');
+  if (!state.projects.length) {
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">◈</div>プロジェクトをまだ追加していません</div>`;
+    return;
+  }
+  el.innerHTML = state.projects.map(item => `
+    <div class="proj-item reveal">
+      <div>
+        <div class="proj-title">${item.title}</div>
+        ${item.desc?`<div class="proj-desc">${item.desc.replace(/\n/g,'<br>')}</div>`:''}
+        <div class="proj-tags">${(item.tags||[]).map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        ${item.link?`<a class="proj-link" href="${item.link}" target="_blank">→ 見る</a>`:''}
+        <div class="item-actions" style="position:static;display:none">
+          <button class="ia-btn" onclick="editItem('project','${item.id}')">✎</button>
+          <button class="ia-btn del" onclick="deleteItem('project','${item.id}')">✕</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  if(editMode) document.querySelectorAll('.proj-item .item-actions').forEach(el=>el.style.display='flex');
+  observeReveal();
+}
+
+/* FUTURE */
+function renderFuture() {
+  const el = document.getElementById('futureList');
+  if (!state.future.length) {
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">◎</div>未来の目標をまだ追加していません</div>`;
+    return;
+  }
+  el.innerHTML = state.future.map((item,i) => `
+    <div class="fut-item reveal">
+      <div class="fut-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="fut-text">
+        <div class="fut-title">${item.title}</div>
+        ${item.desc?`<div class="fut-desc">${item.desc.replace(/\n/g,'<br>')}</div>`:''}
+        ${item.horizon?`<div class="fut-horizon">${item.horizon}</div>`:''}
+      </div>
+      <div class="item-actions">
+        <button class="ia-btn" onclick="editItem('future','${item.id}')">✎</button>
+        <button class="ia-btn del" onclick="deleteItem('future','${item.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+  observeReveal();
+}
+
+/* BOOKS */
+function renderBooks() {
+  const el = document.getElementById('booksList');
+  if (!state.books.length) {
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">◻</div>本・論文をまだ追加していません</div>`;
+    return;
+  }
+  el.innerHTML = state.books.map((item,i) => `
+    <div class="book-item reveal">
+      <div class="book-n">${String(i+1).padStart(2,'0')}</div>
+      <div>
+        <div class="book-title">${item.title}</div>
+        ${item.author?`<div class="book-author">${item.author}</div>`:''}
+        ${item.note?`<div class="book-note">${item.note.replace(/\n/g,'<br>')}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <div class="book-kind ${item.kind==='論文'?'paper':''}">${item.kind||'書籍'}</div>
+        <div class="item-actions" style="position:static;display:none">
+          <button class="ia-btn" onclick="editItem('book','${item.id}')">✎</button>
+          <button class="ia-btn del" onclick="deleteItem('book','${item.id}')">✕</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  if(editMode) document.querySelectorAll('.book-item .item-actions').forEach(el=>el.style.display='flex');
+  observeReveal();
+}
+
+/* PHOTOS */
+function renderPhotos() {
+  const grid = document.getElementById('photosGrid');
+  grid.innerHTML = state.photos.map((p,i) => `
+    <div class="photo-slot ${p.img?'filled':''}" data-idx="${i}" onclick="handlePhotoClick(${i})">
+      <img src="${p.img||''}" alt="">
+      <div class="ph-empty">
+        <span class="plus">＋</span>
+        <span>写真を追加</span>
+      </div>
+      ${p.cap?`<div class="ph-cap">${p.cap}</div>`:''}
+      <button class="ph-del" onclick="deletePhoto(event,${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+/* ════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════ */
+function observeReveal() {
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+  },{threshold:.1});
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>obs.observe(el));
+}
+
+/* ════════════════════════════════════════
+   MODAL SYSTEM
+════════════════════════════════════════ */
+function openModal(section, id) {
+  editingSection = section;
+  editingId = id || null;
+  const existing = id ? state[section === 'career' ? 'career'
+    : section === 'project' ? 'projects'
+    : section === 'future' ? 'future'
+    : 'books'].find(x=>x.id===id) : null;
+
+  let html = '';
+
+  if (section === 'career') {
+    html = `
+      <h3>${id ? '経歴を編集' : '経歴・資格を追加'}</h3>
+      <div class="field-row">
+        <div class="field"><label>期間・年</label><input id="f_year" value="${existing?.year||''}" placeholder="2019–2023"></div>
+        <div class="field"><label>種別</label><select id="f_type">
+          <option value="education" ${existing?.type==='education'?'selected':''}>🎓 学歴</option>
+          <option value="work" ${existing?.type==='work'?'selected':''}>💼 職歴</option>
+          <option value="cert" ${existing?.type==='cert'?'selected':''}>📜 資格</option>
+          <option value="other" ${existing?.type==='other'?'selected':''}>その他</option>
+        </select></div>
+      </div>
+      <div class="field"><label>タイトル</label><input id="f_title" value="${existing?.title||''}" placeholder="大学名・会社名・資格名"></div>
+      <div class="field"><label>機関・組織</label><input id="f_org" value="${existing?.org||''}" placeholder="学部・部署など"></div>
+      <div class="field"><label>詳細</label><textarea id="f_desc" placeholder="学んだこと・業務内容など">${existing?.desc||''}</textarea></div>
+      <div class="field"><div class="checkbox-row"><input type="checkbox" id="f_future" ${existing?.future?'checked':''}><label for="f_future" style="text-transform:none;font-size:12px;letter-spacing:0;color:var(--future)">「これから」の予定として表示する</label></div></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">キャンセル</button>
+        <button class="btn" onclick="saveCareer()">保存</button>
+      </div>`;
+  } else if (section === 'project') {
+    html = `
+      <h3>${id ? 'プロジェクトを編集' : 'プロジェクトを追加'}</h3>
+      <div class="field"><label>タイトル</label><input id="f_title" value="${existing?.title||''}" placeholder="プロジェクト名"></div>
+      <div class="field"><label>説明</label><textarea id="f_desc" placeholder="何をしたか、成果など">${existing?.desc||''}</textarea></div>
+      <div class="field"><label>技術・タグ（カンマ区切り）</label><input id="f_tags" value="${(existing?.tags||[]).join(', ')}" placeholder="React, Python, Stata ..."></div>
+      <div class="field"><label>URL（任意）</label><input id="f_link" value="${existing?.link||''}" placeholder="https://github.com/..."></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">キャンセル</button>
+        <button class="btn" onclick="saveProject()">保存</button>
+      </div>`;
+  } else if (section === 'future') {
+    html = `
+      <h3>${id ? '目標を編集' : '目標・計画を追加'}</h3>
+      <div class="field"><label>目標</label><input id="f_title" value="${existing?.title||''}" placeholder="達成したいこと"></div>
+      <div class="field"><label>詳細・理由</label><textarea id="f_desc" placeholder="なぜ目指すのか、具体的な計画など">${existing?.desc||''}</textarea></div>
+      <div class="field"><label>時間軸</label><input id="f_horizon" value="${existing?.horizon||''}" placeholder="2026, 3年以内, 継続的..."></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">キャンセル</button>
+        <button class="btn" onclick="saveFuture()">保存</button>
+      </div>`;
+  } else if (section === 'book') {
+    html = `
+      <h3>${id ? '書籍・論文を編集' : '書籍・論文を追加'}</h3>
+      <div class="field-row">
+        <div class="field"><label>種別</label><select id="f_kind">
+          <option value="書籍" ${existing?.kind==='書籍'||!existing?'selected':''}>📚 書籍</option>
+          <option value="論文" ${existing?.kind==='論文'?'selected':''}>📄 論文</option>
+          <option value="記事" ${existing?.kind==='記事'?'selected':''}>📰 記事</option>
+          <option value="その他" ${existing?.kind==='その他'?'selected':''}>その他</option>
+        </select></div>
+        <div class="field"><label>読了状況</label><select id="f_status">
+          <option value="読了" ${existing?.status==='読了'||!existing?'selected':''}>✓ 読了</option>
+          <option value="読中" ${existing?.status==='読中'?'selected':''}>◑ 読中</option>
+          <option value="積読" ${existing?.status==='積読'?'selected':''}>○ 積読</option>
+        </select></div>
+      </div>
+      <div class="field"><label>タイトル</label><input id="f_title" value="${existing?.title||''}" placeholder="書籍・論文タイトル"></div>
+      <div class="field"><label>著者 / Author</label><input id="f_author" value="${existing?.author||''}" placeholder="著者名、出版年など"></div>
+      <div class="field"><label>メモ・感想</label><textarea id="f_note" placeholder="学んだこと、印象に残ったこと">${existing?.note||''}</textarea></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">キャンセル</button>
+        <button class="btn" onclick="saveBook()">保存</button>
+      </div>`;
+  }
+
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>{ const fi = document.getElementById('f_title')||document.getElementById('f_year'); if(fi)fi.focus(); },50);
+}
+
+function openProfileModal() {
+  const p = state.profile;
+  document.getElementById('modal').innerHTML = `
+    <h3>プロフィールを編集</h3>
+    <div class="field-row">
+      <div class="field"><label>名前</label><input id="f_name" value="${p.name}" placeholder="Your Name"></div>
+      <div class="field"><label>名前（イタリック部分）</label><input id="f_nameitalic" value="${p.nameItalic||''}" placeholder="Family name など"></div>
+    </div>
+    <div class="field"><label>自己紹介</label><textarea id="f_tagline" placeholder="研究テーマ・関心事など">${p.tagline}</textarea></div>
+    <div class="field"><label>タグ（カンマ区切り）</label><input id="f_chips" value="${p.chips.join(', ')}" placeholder="Sociology, NUS, Tokyo..."></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">キャンセル</button>
+      <button class="btn" onclick="saveProfile()">保存</button>
+    </div>`;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+function overlayClick(e) { if(e.target===document.getElementById('overlay')) closeModal(); }
+
+/* ════════════════════════════════════════
+   SAVE HANDLERS
+════════════════════════════════════════ */
+function saveProfile() {
+  state.profile.name = document.getElementById('f_name').value.trim() || 'Your Name';
+  state.profile.nameItalic = document.getElementById('f_nameitalic').value.trim();
+  state.profile.tagline = document.getElementById('f_tagline').value.trim();
+  state.profile.chips = document.getElementById('f_chips').value.split(',').map(s=>s.trim()).filter(Boolean);
+  save(); renderProfile(); closeModal();
+}
+
+function saveCareer() {
+  const item = {
+    id: editingId || uid(),
+    year: document.getElementById('f_year').value.trim(),
+    type: document.getElementById('f_type').value,
+    title: document.getElementById('f_title').value.trim(),
+    org: document.getElementById('f_org').value.trim(),
+    desc: document.getElementById('f_desc').value.trim(),
+    future: document.getElementById('f_future').checked
+  };
+  if (!item.title) return;
+  if (editingId) {
+    const idx = state.career.findIndex(x=>x.id===editingId);
+    if(idx>-1) state.career[idx]=item;
+  } else {
+    state.career.push(item);
+  }
+  save(); renderCareer(); closeModal();
+}
+
+function saveProject() {
+  const item = {
+    id: editingId || uid(),
+    title: document.getElementById('f_title').value.trim(),
+    desc: document.getElementById('f_desc').value.trim(),
+    tags: document.getElementById('f_tags').value.split(',').map(s=>s.trim()).filter(Boolean),
+    link: document.getElementById('f_link').value.trim()
+  };
+  if (!item.title) return;
+  if (editingId) {
+    const idx = state.projects.findIndex(x=>x.id===editingId);
+    if(idx>-1) state.projects[idx]=item;
+  } else {
+    state.projects.push(item);
+  }
+  save(); renderProjects(); closeModal();
+}
+
+function saveFuture() {
+  const item = {
+    id: editingId || uid(),
+    title: document.getElementById('f_title').value.trim(),
+    desc: document.getElementById('f_desc').value.trim(),
+    horizon: document.getElementById('f_horizon').value.trim()
+  };
+  if (!item.title) return;
+  if (editingId) {
+    const idx = state.future.findIndex(x=>x.id===editingId);
+    if(idx>-1) state.future[idx]=item;
+  } else {
+    state.future.push(item);
+  }
+  save(); renderFuture(); closeModal();
+}
+
+function saveBook() {
+  const item = {
+    id: editingId || uid(),
+    kind: document.getElementById('f_kind').value,
+    status: document.getElementById('f_status').value,
+    title: document.getElementById('f_title').value.trim(),
+    author: document.getElementById('f_author').value.trim(),
+    note: document.getElementById('f_note').value.trim()
+  };
+  if (!item.title) return;
+  if (editingId) {
+    const idx = state.books.findIndex(x=>x.id===editingId);
+    if(idx>-1) state.books[idx]=item;
+  } else {
+    state.books.push(item);
+  }
+  save(); renderBooks(); closeModal();
+}
+
+/* ════════════════════════════════════════
+   EDIT / DELETE
+════════════════════════════════════════ */
+function editItem(section, id) {
+  const map = {career:'career',project:'projects',future:'future',book:'books'};
+  // find which collection
+  if (section==='career') openModal('career',id);
+  else if (section==='project') openModal('project',id);
+  else if (section==='future') openModal('future',id);
+  else if (section==='book') openModal('book',id);
+}
+
+function deleteItem(section, id) {
+  if (!confirm('削除しますか？')) return;
+  const map = {career:'career',project:'projects',future:'future',book:'books'};
+  const key = map[section];
+  state[key] = state[key].filter(x=>x.id!==id);
+  save();
+  if(section==='career') renderCareer();
+  else if(section==='project') renderProjects();
+  else if(section==='future') renderFuture();
+  else if(section==='book') renderBooks();
+}
+
+/* ════════════════════════════════════════
+   PHOTOS
+════════════════════════════════════════ */
+function addPhotoSlot() {
+  state.photos.push({id:uid(),img:'',cap:''});
+  save(); renderPhotos();
+}
+
+function handlePhotoClick(idx) {
+  const p = state.photos[idx];
+  if (!p.img) {
+    photoSlotTarget = idx;
+    document.getElementById('photoInput').click();
+  } else if (editMode) {
+    // edit caption
+    const cap = prompt('キャプションを入力:', p.cap||'');
+    if (cap !== null) {
+      state.photos[idx].cap = cap;
+      save(); renderPhotos();
+    }
+  }
+}
+
+function deletePhoto(e, idx) {
+  e.stopPropagation();
+  if (!confirm('削除しますか？')) return;
+  state.photos.splice(idx,1);
+  save(); renderPhotos();
+}
+
+document.getElementById('photoInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file || photoSlotTarget === null) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    state.photos[photoSlotTarget].img = ev.target.result;
+    save(); renderPhotos();
+    photoSlotTarget = null;
+  };
+  reader.readAsDataURL(file);
+  this.value = '';
+});
+
+/* ════════════════════════════════════════
+   PROFILE IMAGE
+════════════════════════════════════════ */
+function triggerProfileImg() {
+  if (!editMode) return;
+  document.getElementById('profileImgInput').click();
+}
+document.getElementById('profileImgInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    state.profile.img = ev.target.result;
+    save(); renderProfile();
+  };
+  reader.readAsDataURL(file);
+  this.value = '';
+});
+
+/* ════════════════════════════════════════
+   SCROLL NAV
+════════════════════════════════════════ */
+window.addEventListener('scroll', ()=>{
+  document.getElementById('mainnav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+/* ════════════════════════════════════════
+   KEYBOARD
+════════════════════════════════════════ */
+document.addEventListener('keydown', e=>{
+  if (e.key==='Escape') closeModal();
+});
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+load();
+renderAll();
+observeReveal();
+</script>
+</body>
+</html>
